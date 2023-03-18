@@ -29,10 +29,10 @@ class App extends React.Component{
       })
 
       let allCategories = await categoriesJson
-      let ctg = allCategories.data.categories
+      // let ctg = allCategories.data.categories
 
       this.setState({productsArray:newArray})
-      this.setState({ctgArray:ctg})
+      // this.setState({ctgArray:ctg})
 
       this.setState({testFetch:fetchProduct})
 
@@ -44,7 +44,7 @@ class App extends React.Component{
   componentDidUpdate(prevProps) {
     if (this.props.location.pathname !== prevProps.location.pathname) {
       let k = 0;
-      this.state.ctgArray.map(m=>{
+      categoriesJson.data.categories.map(m=>{
 
         if(m.name === window.location.pathname.replace('/','') || window.location.pathname === "/")
         {
@@ -194,7 +194,7 @@ class App extends React.Component{
         <>
         <Header ctgArray={this.state.ctgArray} selectAttr={this.selectAttr} currentCurrency={this.state.currentCurrency} selectedCurrency={this.selectCurrency} onSubstruct={this.onSubstruct} sumUp={this.sumUp}  addedProductsArray={this.state.selectedProducts} attrList = {this.state.selectedAttr}/>
 
-        {this.state.ctgArray.map(m=>{
+        {categoriesJson.data.categories.map(m=>{
           return(
             <Route key={m.name} exact path={m.name === 'all' ? '/' : `/${m.name}`}>
                 

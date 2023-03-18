@@ -1,6 +1,7 @@
 import React from "react";
 import ProductsBag from "./ProductsBag";
 import currencyJson from "../Api/currency.json";
+import categoriesJson from '../Api/categories.json'
 import {NavLink} from 'react-router-dom'
 import {withRouter} from 'react-router-dom'
 class Header extends React.Component{
@@ -25,7 +26,6 @@ class Header extends React.Component{
         return () => {
           document.removeEventListener('click', onOutsideCurrenyClick, true);
         };
-        
     }
 
     equals = (a, b) => JSON.stringify(a) === JSON.stringify(b);
@@ -126,14 +126,13 @@ class Header extends React.Component{
     
     render(){
         let uniqueArray = new Set(this.props.addedProductsArray)
-         
         return(
             <>
             <div className="headerCnt">
             <header>
                 <div className="category">
                     <ul className="category__ul">
-                        {this.props.ctgArray.map((m)=>{
+                        {categoriesJson.data.categories.map((m)=>{
                         return(
                             <li key={m.name}><NavLink exact activeClassName="active" to={m.name === 'all' ? '/' : `/${m.name}`}>{m.name}</NavLink><div className="category__line"></div></li>
                         )
