@@ -1,0 +1,10 @@
+{
+    "data" : {
+        "categories" :[
+            {"name" : "all"},
+            {"name" : "clothes"},
+            {"name" : "tech"}
+        
+        ]
+    }
+}
