@@ -1,4 +1,6 @@
 import React from "react";
+import { connect } from "react-redux";
+import { selectProduct, selectAttributes } from "../actions";
 
 class Plp extends React.Component{
     constructor(props){
@@ -60,7 +62,7 @@ class Plp extends React.Component{
     }
 
       checkAttr = (id,label,val) => {
-        for(let list of this.props.attrList){
+        for(let list of this.props.attrReducer){
             if(list.id === id && list.attrLabel === label && list.attrVal === val){
                 return 'active'
             }
@@ -76,7 +78,7 @@ class Plp extends React.Component{
                     return(
                     <div className="plp__cnt__flex__swatch" key={m.name}>
                     {m.items.map((e)=>(
-                        <div onClick={()=>{this.props.selectAttr(e.value,id,m.name)}} className={`miniCheckoutCnt__item_attr_color ${this.checkAttr(id,m.name,e.value)}`} key={e.value} style={{backgroundColor:`${e.value}`}}></div>))}
+                        <div onClick={()=>{this.props.selectAttributes(e.value,id,m.name)}} className={`miniCheckoutCnt__item_attr_color ${this.checkAttr(id,m.name,e.value)}`} key={e.value} style={{backgroundColor:`${e.value}`}}></div>))}
                     </div>
                     )
                     
@@ -85,7 +87,7 @@ class Plp extends React.Component{
                     return(
                     <div className="plp__cnt__flex__text" key={m.name} >
                         {m.items.map((e)=>(
-                        <div onClick={()=>{this.props.selectAttr(e.value,id,m.name)}} className={`pdp__details__attr__text ${this.checkAttr(id,m.name,e.value)}`} key={e.value}>{e.value}</div>))}
+                        <div onClick={()=>{this.props.selectAttributes(e.value,id,m.name)}} className={`pdp__details__attr__text ${this.checkAttr(id,m.name,e.value)}`} key={e.value}>{e.value}</div>))}
                     </div>
                     )
                 }
@@ -113,15 +115,15 @@ class Plp extends React.Component{
                         <div className="plp__attr">{this.renderAttrubtes(m.attributes,m.id)}</div>
                     </div>
                     <div className="plp__quantityCnt">
-                        <div onClick={()=>{this.props.sumUp(m)}}><img className="plp__quantityCnt__img" src="/big-plus.png" alt="plus" /></div>
+                        <div onClick={()=>{this.props.selectProduct(m)}}><img className="plp__quantityCnt__img" src="/big-plus.png" alt="plus" /></div>
                         <div className="plp__count">{m.coun}</div>
                         <div onClick={()=>{this.props.onSubstruct(m)}}><img className="plp__quantityCnt__img" src="/big-minus.png" alt="minus" /></div>
                     </div>
 
                     <div className="plp__cnt__gallery">
-                        <img onClick={(e)=>{this.onLeftArrowClick(m.gallery,e)}} className="leftArrow" src="/arrow-left.png" alt="left" />
+                        {m.gallery.length > 1 ? <img onClick={(e)=>{this.onLeftArrowClick(m.gallery,e)}} className="leftArrow" src="/arrow-left.png" alt="left" /> : ''}
                         <div className="plp__cnt__gallery__img" style={{backgroundImage: `url(${m.gallery[0]})`}}></div>
-                        <img onClick={(e)=>{this.onRightArrowClick(m.gallery,e)}} className="rightArrow" src="/arrow-right.png" alt="right" />
+                        {m.gallery.length > 1 ? <img onClick={(e)=>{this.onRightArrowClick(m.gallery,e)}} className="rightArrow" src="/arrow-right.png" alt="right" /> : ''}
                     </div>
 
                 </div>
@@ -131,4 +133,12 @@ class Plp extends React.Component{
     }
 }
 
-export default Plp
+const mapStateToProps = (state) =>{
+    return{
+        selectedProducts: state.selectedProducts,
+        attrReducer: state.attrReducer,
+        currentCurrency: state.selectedCurrency
+    }
+}
+
+export default connect(mapStateToProps,{selectProduct,selectAttributes})(Plp)

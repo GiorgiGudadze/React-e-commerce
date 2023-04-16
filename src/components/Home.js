@@ -1,5 +1,7 @@
 import React from "react";
 import ProductList from "./ProductList";
+import { connect } from "react-redux";
+
 class Home extends React.Component{
 
   constructor(props){
@@ -10,16 +12,17 @@ class Home extends React.Component{
 
   render(){
     return(
-        
       <div className="productsCnt">
-        <div className="currentCtg">{this.props.ctgName}</div>
-        <div className="productsWrap">
-        <ProductList selectAttr={this.props.selectAttr} attrList={this.props.attrList} currentCurrency={this.props.currentCurrency} list={this.props.productsArray} addCart={this.props.addCart}/>
-
-      </div>
+          <div className="currentCtg">{this.props.ctgName}</div>
+          <div className="productsWrap">
+            <ProductList/>
+          </div>
       </div>
     )
   }
 }
+const mapStateToProps = (state) =>{
+  return {selectedProducts: state.selectedProducts}
+}
 
-export default Home;
+export default connect(mapStateToProps)(Home);

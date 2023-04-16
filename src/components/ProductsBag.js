@@ -1,5 +1,7 @@
 import React from "react";
-import {Link} from 'react-router-dom'
+import { connect } from "react-redux";
+import {Link} from 'react-router-dom';
+import { selectProduct, selectAttributes } from "../actions";
 class ProductsBag extends React.Component{
 
     constructor(props){
@@ -16,7 +18,7 @@ class ProductsBag extends React.Component{
                     return(
                     <div key={m.name} className="miniCheckoutCnt__item_flex1__render__swatch">
                     {m.items.map((e)=>(
-                        <div onClick={()=>{this.props.selectAttr(e.value,id,m.name)}} className={`miniCheckoutCnt__item_attr_color ${this.checkAttr(id,m.name,e.value)}`} key={e.value} style={{backgroundColor:`${e.value}`}}></div>))}
+                        <div onClick={()=>{this.props.selectAttributes(e.value,id,m.name)}} className={`miniCheckoutCnt__item_attr_color ${this.checkAttr(id,m.name,e.value)}`} key={e.value} style={{backgroundColor:`${e.value}`}}></div>))}
                     </div>
                     )
                     
@@ -25,7 +27,7 @@ class ProductsBag extends React.Component{
                     return(
                     <div className="miniCheckoutCnt__item_flex1__render__text" key={m.name}>
                         {m.items.map((e)=>(
-                        <div className={`miniCheckoutCnt__item_attr_text ${this.checkAttr(id,m.name,e.value)}`} key={e.value} onClick={()=>{this.props.selectAttr(e.value,id,m.name)}}>{e.value}</div>))}
+                        <div className={`miniCheckoutCnt__item_attr_text ${this.checkAttr(id,m.name,e.value)}`} key={e.value} onClick={()=>{this.props.selectAttributes(e.value,id,m.name)}}>{e.value}</div>))}
                     </div>
                     )
                 }
@@ -38,7 +40,7 @@ class ProductsBag extends React.Component{
 
     checkAttr=(id,label,val)=>{
         
-        for(let list of this.props.attrList){
+        for(let list of this.props.attrReducer){
             if(list.id === id && list.attrLabel === label && list.attrVal === val){
                 return 'active'
             }
@@ -91,7 +93,7 @@ class ProductsBag extends React.Component{
                             <div className="miniCheckoutCnt__item_attr">{this.renderAttrubtes(m.attributes,m.id)}</div>
                         </div>
                         <div className="miniCheckoutCnt__item_quantityCnt">
-                            <div onClick={()=>{this.props.sumUp((m))}}><img className="miniCheckoutCnt__item_quantityCnt__img" src="/plus.png" alt="plus" /></div>
+                            <div onClick={()=>{this.props.selectProduct((m))}}><img className="miniCheckoutCnt__item_quantityCnt__img" src="/plus.png" alt="plus" /></div>
                             <div className="miniCheckoutCnt__item_quantityCnt_count">{m.coun}</div>
                             <div onClick={()=>{this.props.onSubstruct(m)}}><img className="miniCheckoutCnt__item_quantityCnt__img" src="/minus.png" alt="minus" /></div>
                         </div>
@@ -133,4 +135,12 @@ class ProductsBag extends React.Component{
     }
 }
 
-export default ProductsBag
+const mapStateToProps = (state) =>{
+    return{
+        selectedProducts: state.selectedProducts,
+        attrReducer: state.attrReducer,
+        currentCurrency: state.selectedCurrency
+    }
+}
+
+export default connect(mapStateToProps,{selectProduct,selectAttributes})(ProductsBag)

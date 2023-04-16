@@ -1,5 +1,7 @@
 import React from "react";
 import productById from '../Api/productById.json'
+import { connect } from "react-redux";
+import { selectProduct, selectAttributes } from "../actions";
 class Pdp extends React.Component{
 
     constructor(props){
@@ -15,7 +17,7 @@ class Pdp extends React.Component{
 
     checkAttr=(id,label,val)=>{
         
-        for(let list of this.props.attrList){
+        for(let list of this.props.attrReducer){
             if(list.id === id && list.attrLabel === label && list.attrVal === val){
                 return 'active'
             }
@@ -24,9 +26,9 @@ class Pdp extends React.Component{
     }
 
     validate = ()=>{
-        let current = this.props.attrList.filter(f=>f.id===this.state.pdpData.id)
+        let current = this.props.attrReducer.filter(f=>f.id===this.state.pdpData.id)
         if(this.state.pdpData.inStock === true && current.length === this.state.pdpData.attributes.length){
-            this.props.addCart(this.state.pdpData) 
+            this.props.selectProduct(this.state.pdpData) 
             this.setState({option:true})
         }
         else{
@@ -97,7 +99,7 @@ class Pdp extends React.Component{
                                         <div className="pdp__details__attr__cnt" key={m.name}>
                                         <p className="pdp__details__attr__cnt__p">{m.name}</p>
                                             {m.items.map((e,index)=>(
-                                            <div key={e.displayValue} onClick={()=>{this.props.selectAttr(e.value,this.state.pdpData.id,m.name)}} className={`pdp__details__attr__text ${this.checkAttr(this.state.pdpData.id,m.name,e.value)}`}>{e.value}</div>
+                                            <div key={e.displayValue} onClick={()=>{this.props.selectAttributes(e.value,this.state.pdpData.id,m.name)}} className={`pdp__details__attr__text ${this.checkAttr(this.state.pdpData.id,m.name,e.value)}`}>{e.value}</div>
                                             ))}
                                         </div>
                                     )
@@ -108,7 +110,7 @@ class Pdp extends React.Component{
                                         <div className="pdp__details__attr__swatch" key={m.name}>
                                         <p className="pdp__details__attr__swatch__p">{m.name}</p>
                                             {m.items.map((e,index)=>(
-                                            <div onClick={()=>{this.props.selectAttr(e.value,this.state.pdpData.id,m.name)}} className={`miniCheckoutCnt__item_attr_color ${this.checkAttr(this.state.pdpData.id,m.name,e.value)} swatchPdp`} key={e.displayValue} style={{backgroundColor:`${e.value}`}}></div>
+                                            <div onClick={()=>{this.props.selectAttributes(e.value,this.state.pdpData.id,m.name)}} className={`miniCheckoutCnt__item_attr_color ${this.checkAttr(this.state.pdpData.id,m.name,e.value)} swatchPdp`} key={e.displayValue} style={{backgroundColor:`${e.value}`}}></div>
                                             ))}
                                         </div>
                                 )}
@@ -147,4 +149,12 @@ class Pdp extends React.Component{
     }
 }
 
-export default Pdp;
+const mapStateToProps = (state) =>{
+    return{
+        selectedProducts: state.selectedProducts,
+        attrReducer: state.attrReducer,
+        currentCurrency: state.selectedCurrency
+    }
+  }
+
+export default connect(mapStateToProps,{selectProduct,selectAttributes})(Pdp);

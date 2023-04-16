@@ -1,11 +1,18 @@
 import React from "react";
+import { connect } from "react-redux";
 import {Link} from 'react-router-dom'
+import { selectProduct, selectAttributes, fetchProducts } from "../actions";
 class ProductList extends React.Component{
 
     constructor(props){
         super(props)
         this.state = {selectedProducts:[],modal:false,currentId:'',option:true}
     }
+
+    componentDidMount(){
+      this.props.fetchProducts()
+    }
+
     productPrice(priceArray){
       return priceArray.map(m=>{
         if(m.currency.label === this.props.currentCurrency){
@@ -23,7 +30,7 @@ class ProductList extends React.Component{
 
     checkAttr=(id,label,val)=>{
         
-      for(let list of this.props.attrList){
+      for(let list of this.props.attrReducer){
           if(list.id === id && list.attrLabel === label && list.attrVal === val){
               return 'active'
           }
@@ -32,9 +39,9 @@ class ProductList extends React.Component{
     }
 
     validateAttr=(product)=>{
-      let current = this.props.attrList.filter(f=>f.id===product.id)
+      let current = this.props.attrReducer.filter(f=>f.id===product.id)
       if(current.length === product.attributes.length){
-        this.props.addCart(product)
+        this.props.selectProduct(product)
         this.setState({option:true})
         this.setState({modal:false})
       }
@@ -56,7 +63,7 @@ class ProductList extends React.Component{
                   {m.name}
                   </div>
                   {m.items.map((e)=>(
-                      <div onClick={()=>{this.props.selectAttr(e.value,id,m.name)}} className={`miniCheckoutCnt__item_attr_color ${this.checkAttr(id,m.name,e.value)}`} key={e.value} style={{backgroundColor:`${e.value}`}}></div>))}
+                      <div onClick={()=>{this.props.selectAttributes(e.value,id,m.name)}} className={`miniCheckoutCnt__item_attr_color ${this.checkAttr(id,m.name,e.value)}`} key={e.value} style={{backgroundColor:`${e.value}`}}></div>))}
                   </div>
                   )
                   
@@ -68,7 +75,7 @@ class ProductList extends React.Component{
                       {m.name}
                       </div>
                       {m.items.map((e)=>(
-                      <div className={`miniCheckoutCnt__item_attr_text ${this.checkAttr(id,m.name,e.value)}`} key={e.value} onClick={()=>{this.props.selectAttr(e.value,id,m.name)}}>{e.value}</div>))}
+                      <div className={`miniCheckoutCnt__item_attr_text ${this.checkAttr(id,m.name,e.value)}`} key={e.value} onClick={()=>{this.props.selectAttributes(e.value,id,m.name)}}>{e.value}</div>))}
                   </div>
                   )
               }
@@ -88,7 +95,7 @@ class ProductList extends React.Component{
     render(){
         return(
           <>
-            {this.props.list.map((m,index)=>{
+            {this.props.productsList.map((m,index)=>{
               
                 return(
                   <div className="productATag" key={m.id}>
@@ -100,7 +107,6 @@ class ProductList extends React.Component{
                       <div className="product__purchase" onClick={(e)=>{
                         e.preventDefault()
 
-                        // this.props.addCart(m,index)
                         if(m.attributes.length > 0){
                           this.setState({modal:!this.state.modal})
                           // this.popUp(m.attributes,m.id)
@@ -108,7 +114,7 @@ class ProductList extends React.Component{
                           this.setState({currentId:m.id})
                         }
                         else{
-                          this.props.addCart(m)
+                          this.props.selectProduct(m)
                         }
 
 
@@ -135,5 +141,13 @@ class ProductList extends React.Component{
         )
     }
 }
+const mapStateToProps = (state) =>{
+    return{
+      selectedProducts: state.selectedProducts,
+      attrReducer: state.attrReducer,
+      currentCurrency: state.selectedCurrency,
+      productsList: state.productsList
+    }
+}
 
-export default ProductList
+export default connect(mapStateToProps,{selectProduct,selectAttributes,fetchProducts})(ProductList);
