@@ -4,6 +4,8 @@ import currencyJson from "../Api/currency.json";
 import categoriesJson from '../Api/categories.json'
 import {NavLink} from 'react-router-dom'
 import {withRouter} from 'react-router-dom'
+import { connect } from "react-redux";
+import { selectCurrency } from "../actions";
 class Header extends React.Component{
     constructor(props){
         super(props)
@@ -52,7 +54,7 @@ class Header extends React.Component{
 
     countTotal=()=>{
         let total = 0
-        let uniqueArray = new Set(this.props.addedProductsArray)
+        let uniqueArray = new Set(this.props.selectedProducts)
         let myProductsArray = Array.from(uniqueArray)
 
         myProductsArray.map(m=>{
@@ -77,7 +79,7 @@ class Header extends React.Component{
         }
 
         if(this.state.showBag === true){
-            if(this.props.addedProductsArray.length === 0){
+            if(this.props.selectedProducts.length === 0){
                 this.setState({showBag:false})
             }
         }
@@ -87,7 +89,7 @@ class Header extends React.Component{
 
     miniCheckout(){
         return(
-            <ProductsBag currencyArray={this.state.currencyArray} total={this.countTotal()} attrList={this.props.attrList} selectAttr={this.props.selectAttr} currentCurrency={this.props.currentCurrency} onSubstruct={this.props.onSubstruct} sumUp={this.props.sumUp} selectedProducts={this.props.addedProductsArray} />
+            <ProductsBag currencyArray={this.state.currencyArray} total={this.countTotal()} currentCurrency={this.props.currentCurrency} onSubstruct={this.props.onSubstruct} />
         )
     }
 
@@ -104,7 +106,7 @@ class Header extends React.Component{
                     {this.state.currencyArray.map(m=>(
                         
                     <li key={m.label} onClick={()=>{
-                        this.props.selectedCurrency(m.label)
+                        this.props.selectCurrency(m.label)
                         this.setState({showCurrency:false})
                     }} className={`currencyCnt__ul__li ${this.props.currentCurrency === m.label ? 'active' :''}`}>{m.label} {m.symbol}</li>
                     ))}
@@ -125,7 +127,7 @@ class Header extends React.Component{
 
     
     render(){
-        let uniqueArray = new Set(this.props.addedProductsArray)
+        let uniqueArray = new Set(this.props.selectedProducts)
         return(
             <>
             <div className="headerCnt">
@@ -158,19 +160,26 @@ class Header extends React.Component{
                     </div>
 
                     
-                    {this.state.showBag === true && this.props.addedProductsArray.length > 0 ? this.miniCheckout() : ''}
+                    {this.state.showBag === true && this.props.selectedProducts.length > 0 ? this.miniCheckout() : ''}
 
                 </div>
             </header>
             </div>
-            {/* {this.state.showBag === true && this.props.addedProductsArray.length>0 ?  this.coverBackground(): ''} */}
-            <div className={`backgroundCover ${this.state.showBag === true && this.props.addedProductsArray.length > 0 ? 'visible' : ''}`} onClick={(e)=>{this.handleBackground(e)}}></div>
+            {/* {this.state.showBag === true && this.props.selectedProducts.length>0 ?  this.coverBackground(): ''} */}
+            <div className={`backgroundCover ${this.state.showBag === true && this.props.selectedProducts.length > 0 ? 'visible' : ''}`} onClick={(e)=>{this.handleBackground(e)}}></div>
 
             
-            {/* {this.state.showBag === true && this.props.addedProductsArray.length>0 ?  this.coverBackground(): ''} */}
+            {/* {this.state.showBag === true && this.props.selectedProducts.length>0 ?  this.coverBackground(): ''} */}
             </>
         )
     }
 }
 
-export default withRouter(Header);
+const mapStateToProps = (state) =>{
+    return{
+        selectedProducts: state.selectedProducts,
+        currentCurrency: state.selectedCurrency
+    }
+}
+
+export default connect(mapStateToProps,{selectCurrency})(withRouter(Header));
